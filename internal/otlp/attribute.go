@@ -94,8 +94,8 @@ func serializeAttributeValue(value any) attrValue {
 	}
 
 	typeof := reflect.TypeOf(value)
-	v := reflect.ValueOf(value)
 	kind := typeof.Kind()
+	v := reflect.ValueOf(value)
 
 	if kind == reflect.Pointer {
 		if v.IsNil() {
@@ -103,6 +103,8 @@ func serializeAttributeValue(value any) attrValue {
 		}
 
 		v = v.Elem()
+		typeof = v.Type()
+		kind = typeof.Kind()
 	}
 
 	switch kind {

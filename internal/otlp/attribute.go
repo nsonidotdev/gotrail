@@ -3,6 +3,7 @@ package otlp
 import (
 	"encoding/base64"
 	"reflect"
+	"regexp"
 	"strconv"
 )
 
@@ -58,6 +59,8 @@ type attrKVListValueEntry struct {
 	Key   string    `json:"key"`
 	Value attrValue `json:"value"`
 }
+
+const otlpAttrStructKey = "gtattr"
 
 func (attrStringValue) isAttrValue() {}
 func (attrIntValue) isAttrValue()    {}
@@ -192,6 +195,30 @@ func serializeAttributeValue(value any) attrValue {
 		}
 
 		return attrKVListValue{KVListValue: attrKVListValueInner{Values: entries}}
+
+	case reflect.Struct:
+		entries := make([]attrKVListValueEntry, 0, v.NumField())
+		for i := range v.NumField() {
+			tagValue, ok := typeof.Field(i).Tag.Lookup(otlpAttrStructKey)
+			if !ok {
+				continue
+			}
+
+			if !isKeyValid(tagValue) {
+				continue
+			}
+
+			rawValue := v.Field(i).Interface()
+			value := serializeAttributeValue(rawValue)
+
+			entries = append(entries, attrKVListValueEntry{Key: tagValue, Value: value})
+		}
+
+		if len(entries) == 0 {
+			return attrEmptyValue{}
+		}
+
+		return attrKVListValue{KVListValue: attrKVListValueInner{Values: entries}}
 	}
 
 	return attrEmptyValue{}
@@ -255,4 +282,14 @@ func transformToStringValue(attr attrValue) attrStringValue {
 		}
 	}
 	return attrStringValue{StringValue: ""}
+}
+
+func isKeyValid(key string) bool {
+	pattern := `^[a-zA-Z][a-zA-Z0-9_.\-]*$`
+	matched, err := regexp.MatchString(pattern, key)
+	if err != nil {
+		return false
+	}
+
+	return matched
 }

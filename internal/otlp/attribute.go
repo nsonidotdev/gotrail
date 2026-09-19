@@ -74,6 +74,10 @@ func (attrEmptyValue) isAttrValue()  {}
 func serializeAttributes(attributes map[string]any) []*attr {
 	result := make([]*attr, 0, len(attributes))
 	for key, value := range attributes {
+		if !isKeyValid(key) {
+			continue
+		}
+
 		parsed := serializeAttributeValue(value)
 
 		if _, ok := parsed.(attrEmptyValue); !ok {
@@ -179,7 +183,11 @@ func serializeAttributeValue(value any) attrValue {
 			if rawKey.Kind() != reflect.String {
 				continue
 			}
+
 			key := rawKey.String()
+			if !isKeyValid(key) {
+				continue
+			}
 
 			rawValue := iter.Value().Interface()
 			value := serializeAttributeValue(rawValue)

@@ -131,6 +131,10 @@ func serializeAttributeValue(value any) attrValue {
 		// Bytes
 		if v.Type().Elem().Kind() == reflect.Uint8 {
 			bytes := v.Interface().([]byte)
+			if len(bytes) == 0 {
+				return attrEmptyValue{}
+			}
+
 			return attrBytesValue{
 				BytesValue: base64.StdEncoding.EncodeToString(bytes),
 			}
@@ -145,6 +149,10 @@ func serializeAttributeValue(value any) attrValue {
 				continue
 			}
 			arrayValue = append(arrayValue, value)
+		}
+
+		if len(arrayValue) == 0 {
+			return attrEmptyValue{}
 		}
 
 		if hasMixedAttrs(arrayValue) {
@@ -177,6 +185,10 @@ func serializeAttributeValue(value any) attrValue {
 			}
 
 			entries = append(entries, attrKVListValueEntry{Key: key, Value: value})
+		}
+
+		if len(entries) == 0 {
+			return attrEmptyValue{}
 		}
 
 		return attrKVListValue{KVListValue: attrKVListValueInner{Values: entries}}

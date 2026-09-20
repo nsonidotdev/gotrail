@@ -6,41 +6,40 @@
 package otlp
 
 import (
-	"time"
-
 	"github.com/nsonidotdev/gotrail/internal/id"
 )
 
 type ExportTraceServiceRequest struct {
-	resourceSpans resourceSpan
+	ResourceSpans []ResourceSpan
 }
 
-type resourceSpan struct {
-	resource   resource
-	scopeSpans scopeSpan
+type ResourceSpan struct {
+	Resource   Resource
+	ScopeSpans []ScopeSpan
 }
 
-type scopeSpan struct {
-	scope
+type Resource struct {
+	Attributes []Attribute
 }
 
-type resource struct {
-	attributes []attr
+type ScopeSpan struct {
+	Scope Scope
+	Spans []Span
 }
 
-type scope struct {
-	name       string
-	version    string
-	attributes []attr
+type Scope struct {
+	Name       string
+	Version    string
+	Attributes []Attribute
 }
 
-type span struct {
-	traceID           id.TraceID
-	spanID            id.SpanID
-	parentSpanID      id.SpanID
-	name              string
-	startTimeUnixNano time.Duration
-	endTimeUnixNano   time.Duration
-	kind              spanKind
-	attributes        []attr
+type Span struct {
+	TraceID           id.TraceID
+	SpanID            id.SpanID
+	ParentSpanID      id.SpanID
+	Name              string
+	StartTimeUnixNano uint64
+	EndTimeUnixNano   uint64
+	Kind              SpanKind
+	Attributes        []Attribute
 }

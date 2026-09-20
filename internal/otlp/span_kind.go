@@ -1,9 +1,9 @@
 package otlp
 
-type spanKind int
+type SpanKind int
 
 const (
-	SpanKindUnspecified spanKind = iota
+	SpanKindUnspecified SpanKind = iota
 	SpanKindInternal
 	SpanKindServer
 	SpanKindClient

@@ -7,13 +7,13 @@ import (
 	"strconv"
 )
 
-type attrValue interface {
-	isAttrValue()
-}
-
-type attr struct {
+type Attribute struct {
 	Key   string    `json:"key"`
 	Value attrValue `json:"value"`
+}
+
+type attrValue interface {
+	isAttrValue()
 }
 
 type attrEmptyValue struct{}
@@ -71,8 +71,8 @@ func (attrArrayValue) isAttrValue()  {}
 func (attrKVListValue) isAttrValue() {}
 func (attrEmptyValue) isAttrValue()  {}
 
-func serializeAttributes(attributes map[string]any) []*attr {
-	result := make([]*attr, 0, len(attributes))
+func SerializeAttributes(attributes map[string]any) []*Attribute {
+	result := make([]*Attribute, 0, len(attributes))
 	for key, value := range attributes {
 		if !isKeyValid(key) {
 			continue
@@ -81,7 +81,7 @@ func serializeAttributes(attributes map[string]any) []*attr {
 		parsed := serializeAttributeValue(value)
 
 		if _, ok := parsed.(attrEmptyValue); !ok {
-			attribute := &attr{Key: key, Value: parsed}
+			attribute := &Attribute{Key: key, Value: parsed}
 			result = append(result, attribute)
 		}
 	}

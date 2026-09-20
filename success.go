@@ -3,13 +3,13 @@ package gotrail
 import "context"
 
 func Success(ctx context.Context) {
-	finish(ctx, finishOptions{
+	end(ctx, endOptions{
 		status: statusSuccess,
 	})
 }
 
 func (s *Span) Success() {
-	s.finish(finishOptions{
+	s.end(endOptions{
 		status: statusSuccess,
 	})
 }

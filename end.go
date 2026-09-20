@@ -7,12 +7,12 @@ import (
 	"github.com/nsonidotdev/gotrail/internal/id"
 )
 
-type finishOptions struct {
+type endOptions struct {
 	status status
 	reason string
 }
 
-func finishByID(id id.SpanID, opts finishOptions) {
+func endByID(id id.SpanID, opts endOptions) {
 	if !isInitialized.Load() {
 		return
 	}
@@ -36,10 +36,10 @@ func finishByID(id id.SpanID, opts finishOptions) {
 		return
 	}
 
-	handleFinish(s, opts)
+	handleEnd(s, opts)
 }
 
-func finish(ctx context.Context, opts finishOptions) {
+func end(ctx context.Context, opts endOptions) {
 	if !isInitialized.Load() {
 		return
 	}
@@ -60,10 +60,10 @@ func finish(ctx context.Context, opts finishOptions) {
 		return
 	}
 
-	handleFinish(s, opts)
+	handleEnd(s, opts)
 }
 
-func (s *Span) finish(opts finishOptions) {
+func (s *Span) end(opts endOptions) {
 	if !isInitialized.Load() {
 		return
 	}
@@ -78,11 +78,11 @@ func (s *Span) finish(opts finishOptions) {
 		return
 	}
 
-	handleFinish(s, opts)
+	handleEnd(s, opts)
 }
 
 // Centralized handler for finishing a span
-func handleFinish(s *Span, opts finishOptions) {
+func handleEnd(s *Span, opts endOptions) {
 	if !isInitialized.Load() {
 		return
 	}

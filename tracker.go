@@ -43,8 +43,8 @@ func (t *tracker) terminateAll(reason string) {
 	}
 	t.mu.Unlock()
 
-	finishOptions := finishOptions{status: statusFail, reason: reason}
+	finishOptions := endOptions{status: statusFail, reason: reason}
 	for _, ID := range activeIDs {
-		finishByID(ID, finishOptions)
+		endByID(ID, finishOptions)
 	}
 }

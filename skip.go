@@ -3,14 +3,14 @@ package gotrail
 import "context"
 
 func Skip(ctx context.Context, reason string) {
-	finish(ctx, finishOptions{
+	end(ctx, endOptions{
 		status: statusSuccess,
 		reason: reason,
 	})
 }
 
 func (s *Span) Skip(reason string) {
-	s.finish(finishOptions{
+	s.end(endOptions{
 		status: statusSuccess,
 		reason: reason,
 	})

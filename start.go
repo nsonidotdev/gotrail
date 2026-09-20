@@ -45,7 +45,7 @@ func Start(parent context.Context, name string, attrs map[string]any) (context.C
 
 	ctx := setCtxSpan(parent, newSpan)
 	stop := context.AfterFunc(ctx, func() {
-		newSpan.finish(finishOptions{status: statusFail, reason: errSpanCtxCancelled.Error()})
+		newSpan.end(endOptions{status: statusFail, reason: errSpanCtxCancelled.Error()})
 	})
 	newSpan.stopCancelListener = stop
 

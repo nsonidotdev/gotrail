@@ -17,17 +17,17 @@ const (
 )
 
 type Span struct {
-	id       id.SpanID
-	name     string
-	trace    *trace
-	duration time.Duration
-	start    time.Time
-	meta     map[string]string
-	status   status
-	reason   string
-	children []*Span
-	parent   *Span
-	mu       sync.Mutex
+	id         id.SpanID
+	name       string
+	trace      *trace
+	duration   time.Duration
+	start      time.Time
+	attributes map[string]any
+	status     status
+	reason     string
+	children   []*Span
+	parent     *Span
+	mu         sync.Mutex
 	// After func stop() callback
 	stopCancelListener func() bool
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/nsonidotdev/gotrail/internal/id"
 )
 
-func StartSpan(parent context.Context, name string, meta map[string]string) context.Context {
+func StartSpan(parent context.Context, name string, attrs map[string]any) context.Context {
 	if !isInitialized.Load() || isTerminated.Load() {
 		return parent
 	}
@@ -23,12 +23,12 @@ func StartSpan(parent context.Context, name string, meta map[string]string) cont
 	}
 
 	newSpan := &Span{
-		id:     id,
-		name:   name,
-		start:  time.Now(),
-		meta:   meta,
-		status: statusRunning,
-		parent: parentSpan,
+		id:         id,
+		name:       name,
+		start:      time.Now(),
+		attributes: attrs,
+		status:     statusRunning,
+		parent:     parentSpan,
 	}
 
 	if parentSpan == nil {

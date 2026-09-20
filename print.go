@@ -93,7 +93,7 @@ func recursivePrint(s *Span, opts printOptions) {
 }
 
 func formatSpan(s *Span) []string {
-	lines := make([]string, 0, 3+len(s.meta))
+	lines := make([]string, 0, 3+len(s.attributes))
 
 	lines = append(
 		lines,
@@ -105,17 +105,17 @@ func formatSpan(s *Span) []string {
 		lines = append(lines, fmt.Sprintf("reason: %s", s.reason))
 	}
 
-	if len(s.meta) != 0 {
-		metaLines := formatMeta(s)
+	if len(s.attributes) != 0 {
+		metaLines := formatAttrs(s)
 		lines = append(lines, metaLines...)
 	}
 
 	return lines
 }
 
-func formatMeta(s *Span) []string {
-	lines := make([]string, 0, len(s.meta))
-	for key, value := range s.meta {
+func formatAttrs(s *Span) []string {
+	lines := make([]string, 0, len(s.attributes))
+	for key, value := range s.attributes {
 		lines = append(lines, fmt.Sprintf("%s: %s", key, value))
 	}
 

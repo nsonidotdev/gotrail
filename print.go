@@ -1,7 +1,6 @@
 package tracer
 
 import (
-	"context"
 	"fmt"
 	"strings"
 )
@@ -19,23 +18,22 @@ const (
 	downPrefix  = "│   "
 )
 
-func PrintTrace(ctx context.Context) {
+func PrintTrace(trace *Trace) {
 	if !isInitialized.Load() {
 		return
 	}
 
-	s, err := getCtxSpan(ctx)
-	if err != nil {
-		fmt.Println("error extracting span from context", err)
+	fmt.Printf("TRACE: %s\n", trace.ID)
+	recursivePrint(trace.root, printOptions{isRoot: true, prefix: ""})
+}
+
+func PrintSpanTree(span *Span) {
+	if !isInitialized.Load() {
 		return
 	}
 
-	printTrace(s)
-}
-
-func printTrace(s *Span) {
-	fmt.Printf("TRACE: %s\n", s.id)
-	recursivePrint(s, printOptions{isRoot: true, prefix: ""})
+	fmt.Printf("SPAN: %s\n", span.ID)
+	recursivePrint(span, printOptions{isRoot: true, prefix: ""})
 }
 
 func recursivePrint(s *Span, opts printOptions) {
@@ -93,19 +91,20 @@ func recursivePrint(s *Span, opts printOptions) {
 }
 
 func formatSpan(s *Span) []string {
-	lines := make([]string, 0, 3+len(s.attributes))
+	lines := make([]string, 0, 3+len(s.Attributes))
 
 	lines = append(
 		lines,
-		s.name,
-		fmt.Sprintf("status: %s | duration: %dms", strings.ToUpper(string(s.status)), s.duration.Milliseconds()),
+		s.Name,
+		fmt.Sprintf("ID: %s", s.ID),
+		fmt.Sprintf("status: %s | duration: %dms", strings.ToUpper(string(s.status)), s.Duration.Milliseconds()),
 	)
 
 	if s.reason != "" {
 		lines = append(lines, fmt.Sprintf("reason: %s", s.reason))
 	}
 
-	if len(s.attributes) != 0 {
+	if len(s.Attributes) != 0 {
 		metaLines := formatAttrs(s)
 		lines = append(lines, metaLines...)
 	}
@@ -114,8 +113,8 @@ func formatSpan(s *Span) []string {
 }
 
 func formatAttrs(s *Span) []string {
-	lines := make([]string, 0, len(s.attributes))
-	for key, value := range s.attributes {
+	lines := make([]string, 0, len(s.Attributes))
+	for key, value := range s.Attributes {
 		lines = append(lines, fmt.Sprintf("%s: %s", key, value))
 	}
 

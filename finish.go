@@ -93,21 +93,21 @@ func handleFinish(s *Span, opts finishOptions) {
 	}
 
 	end := time.Now()
-	if s.start.IsZero() {
-		s.start = time.Now()
+	if s.Start.IsZero() {
+		s.Start = time.Now()
 	}
 
-	duration := end.Sub(s.start)
+	duration := end.Sub(s.Start)
 
-	s.duration = duration
+	s.Duration = duration
 	s.status = opts.status
 	s.reason = opts.reason
 
-	tracer.tracker.recordFinish(s.id)
+	tracer.tracker.recordFinish(s.ID)
 
-	rootSpan := getRoot(s)
-	if tracedFinished := isTraceFinished(rootSpan); tracedFinished {
-		handleTraceCompleted(rootSpan)
+	if tracedFinished := isTraceFinished(s.Trace.root); tracedFinished {
+		s.Trace.isFinished.Store(true)
+		handleTraceCompleted(s.Trace)
 	}
 }
 

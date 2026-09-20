@@ -1,6 +1,5 @@
 package tracer
 
 // Entry point for handling completed spans
-func handleTraceCompleted(s *Span) {
-	s.trace.isFinished.Store(true)
+func handleTraceCompleted(t *Trace) {
 }

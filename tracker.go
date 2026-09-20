@@ -21,12 +21,12 @@ func newTracker() *tracker {
 func (t *tracker) recordStart(s *Span) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	existing := t.activeSpans[s.id]
+	existing := t.activeSpans[s.ID]
 	if existing != nil {
 		return
 	}
 
-	t.activeSpans[s.id] = s
+	t.activeSpans[s.ID] = s
 }
 
 func (t *tracker) recordFinish(id id.SpanID) {

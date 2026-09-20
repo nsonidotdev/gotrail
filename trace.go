@@ -6,18 +6,18 @@ import (
 	"github.com/nsonidotdev/gotrail/internal/id"
 )
 
-type trace struct {
-	id         id.TraceID
+type Trace struct {
+	ID         id.TraceID
 	root       *Span
 	isFinished atomic.Bool
 }
 
-func newTrace(root *Span) *trace {
+func newTrace(root *Span) *Trace {
 	// TODO: handle possible error
 	id, _ := id.GenerateTraceID()
 
-	return &trace{
-		id:   id,
+	return &Trace{
+		ID:   id,
 		root: root,
 	}
 }

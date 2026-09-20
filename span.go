@@ -17,12 +17,12 @@ const (
 )
 
 type Span struct {
-	id         id.SpanID
-	name       string
-	trace      *trace
-	duration   time.Duration
-	start      time.Time
-	attributes map[string]any
+	ID         id.SpanID
+	Name       string
+	Trace      *Trace
+	Duration   time.Duration
+	Start      time.Time
+	Attributes map[string]any
 	status     status
 	reason     string
 	children   []*Span

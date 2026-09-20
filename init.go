@@ -5,6 +5,11 @@ import (
 	"sync/atomic"
 )
 
+type tracerConfig struct {
+	service string
+	tracker *tracker
+}
+
 var (
 	initOnce      sync.Once
 	tracer        *tracerConfig

@@ -1,6 +1,9 @@
 package id
 
-import "crypto/rand"
+import (
+	"crypto/rand"
+	"encoding/base64"
+)
 
 // OTel requirements for ids
 type (
@@ -24,4 +27,12 @@ func GenerateSpanID() (SpanID, error) {
 	}
 
 	return id, nil
+}
+
+func (id TraceID) String() string {
+	return base64.StdEncoding.EncodeToString(id[:])
+}
+
+func (id SpanID) String() string {
+	return base64.StdEncoding.EncodeToString(id[:])
 }

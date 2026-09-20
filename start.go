@@ -7,34 +7,34 @@ import (
 	"github.com/nsonidotdev/gotrail/internal/id"
 )
 
-func StartSpan(parent context.Context, name string, attrs map[string]any) context.Context {
+func Start(parent context.Context, name string, attrs map[string]any) (context.Context, *Span) {
 	if !isInitialized.Load() || isTerminated.Load() {
-		return parent
+		return parent, nil
 	}
 
 	parentSpan, _ := getCtxSpan(parent)
-	if parentSpan != nil && parentSpan.trace.isFinished.Load() {
-		return parent
+	if parentSpan != nil && parentSpan.Trace.isFinished.Load() {
+		return parent, nil
 	}
 
 	id, err := id.GenerateSpanID()
 	if err != nil {
-		return parent
+		return parent, nil
 	}
 
 	newSpan := &Span{
-		id:         id,
-		name:       name,
-		start:      time.Now(),
-		attributes: attrs,
+		ID:         id,
+		Name:       name,
+		Start:      time.Now(),
+		Attributes: attrs,
 		status:     statusRunning,
 		parent:     parentSpan,
 	}
 
 	if parentSpan == nil {
-		newSpan.trace = newTrace(newSpan)
+		newSpan.Trace = newTrace(newSpan)
 	} else {
-		newSpan.trace = parentSpan.trace
+		newSpan.Trace = parentSpan.Trace
 	}
 
 	tracer.tracker.recordStart(newSpan)
@@ -49,7 +49,7 @@ func StartSpan(parent context.Context, name string, attrs map[string]any) contex
 	})
 	newSpan.stopCancelListener = stop
 
-	return ctx
+	return ctx, newSpan
 }
 
 func appendSpanChild(s *Span, child *Span) {

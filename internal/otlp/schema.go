@@ -5,41 +5,37 @@
 // https://github.com/open-telemetry/opentelemetry-proto/blob/main/examples/trace.json
 package otlp
 
-import (
-	"github.com/nsonidotdev/gotrail/internal/id"
-)
-
 type ExportTraceServiceRequest struct {
-	ResourceSpans []ResourceSpan
+	ResourceSpans []*ResourceSpan `json:"resourceSpans"`
 }
 
 type ResourceSpan struct {
-	Resource   Resource
-	ScopeSpans []ScopeSpan
+	Resource   *Resource    `json:"resource"`
+	ScopeSpans []*ScopeSpan `json:"scopeSpans"`
 }
 
 type Resource struct {
-	Attributes []Attribute
+	Attributes []*Attribute `json:"attributes,omitempty"`
 }
 
 type ScopeSpan struct {
-	Scope Scope
-	Spans []Span
+	Scope *Scope  `json:"scope"`
+	Spans []*Span `json:"spans"`
 }
 
 type Scope struct {
-	Name       string
-	Version    string
-	Attributes []Attribute
+	Name       string       `json:"name"`
+	Version    string       `json:"version"`
+	Attributes []*Attribute `json:"attributes,omitempty"`
 }
 
 type Span struct {
-	TraceID           id.TraceID
-	SpanID            id.SpanID
-	ParentSpanID      id.SpanID
-	Name              string
-	StartTimeUnixNano uint64
-	EndTimeUnixNano   uint64
-	Kind              SpanKind
-	Attributes        []Attribute
+	TraceID           string       `json:"traceId"`                // id.TraceID
+	SpanID            string       `json:"spanId"`                 // id.SpanID
+	ParentSpanID      string       `json:"parentSpanId,omitempty"` // id.SpanID
+	Name              string       `json:"name"`
+	StartTimeUnixNano string       `json:"startTimeUnixNano"`
+	EndTimeUnixNano   string       `json:"endTimeUnixNano"`
+	Kind              SpanKind     `json:"kind"`
+	Attributes        []*Attribute `json:"attributes,omitempty"`
 }

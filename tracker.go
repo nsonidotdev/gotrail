@@ -36,6 +36,9 @@ func (t *tracker) recordFinish(id id.SpanID) {
 }
 
 func (t *tracker) terminateAll(reason string) {
+	// Any sort of span `end` function needs to remove itself from activeSpans
+	// map so we can't acquire a lock for tracker while calling `end` function
+	// to avoid deadblock
 	t.mu.Lock()
 	activeIDs := make([]id.SpanID, 0, len(t.activeSpans))
 	for id := range t.activeSpans {

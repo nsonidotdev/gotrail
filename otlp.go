@@ -51,7 +51,9 @@ func traceToOTLP(t *Trace) (*otlp.ExportTraceServiceRequest, error) {
 	scopeSpans = append(scopeSpans, scopeSpan)
 
 	resource := &otlp.Resource{
-		// Attributes
+		Attributes: otlp.SerializeAttributes(map[string]any{
+			"service.name": tracer.service,
+		}),
 	}
 
 	resourceSpan := &otlp.ResourceSpan{

@@ -1,21 +1,19 @@
 package gotrail
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "fmt"
 
-// Entry point for handling completed spans
+// Entry point for handling completed traces
 func handleTraceCompleted(t *Trace) {
-	exportTraceRequestData, err := traceToOTLP(t)
-	if err != nil {
-		fmt.Println("error transforming trace to OTLP", err)
+	PrintTrace(t)
+
+	if tracer.connector == nil {
+		return
 	}
 
-	bodyBytes, err := json.Marshal(exportTraceRequestData)
+	flatSpans := flattenSpans(t)
+	err := tracer.connector.Send(flatSpans)
 	if err != nil {
-		fmt.Println("marshallig error", err)
+		fmt.Println(err.Error())
+		return
 	}
-
-	fmt.Println(string(bodyBytes))
 }

@@ -6,8 +6,9 @@ import (
 )
 
 type tracerConfig struct {
-	service string
-	tracker *tracker
+	service   string
+	tracker   *tracker
+	connector Connector
 }
 
 var (
@@ -17,10 +18,15 @@ var (
 	isTerminated  atomic.Bool
 )
 
-func Init(serviceName string) {
+func Init(service string, opts ...Option) {
 	initOnce.Do(func() {
 		tracker := newTracker()
-		tracer = &tracerConfig{tracker: tracker, service: serviceName}
+		tracer = &tracerConfig{tracker: tracker, service: service}
+
+		for _, opt := range opts {
+			opt(tracer)
+		}
+
 		isInitialized.Store(true)
 	})
 }

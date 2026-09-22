@@ -7,17 +7,16 @@ import (
 	"github.com/nsonidotdev/gotrail/internal/otlp"
 )
 
-// Transforms trace and all spans to OTLP format
-func traceToOTLP(t *Trace) (*otlp.ExportTraceServiceRequest, error) {
-	if t.root == nil {
+// Transforms spans to OTLP format
+func SpansToOTLPJSON(spans []*Span) (*otlp.ExportTraceServiceRequest, error) {
+	if len(spans) == 0 {
 		return nil, errNoSpans
 	}
-	flatSpans := flattenSpans(t)
-	spans := make([]*otlp.Span, 0, len(flatSpans))
-	for _, span := range flatSpans {
+	otlpSpans := make([]*otlp.Span, 0, len(spans))
+	for _, span := range spans {
 		attributes := otlp.SerializeAttributes(span.Attributes)
 		otlpSpan := &otlp.Span{
-			TraceID:           hex.EncodeToString(t.ID[:]),
+			TraceID:           hex.EncodeToString(span.Trace.ID[:]),
 			SpanID:            hex.EncodeToString(span.ID[:]),
 			Name:              span.Name,
 			StartTimeUnixNano: strconv.FormatInt(span.Start.UnixNano(), 10),
@@ -28,7 +27,7 @@ func traceToOTLP(t *Trace) (*otlp.ExportTraceServiceRequest, error) {
 		if span.parent != nil {
 			otlpSpan.ParentSpanID = hex.EncodeToString(span.parent.ID[:])
 		}
-		spans = append(spans, otlpSpan)
+		otlpSpans = append(otlpSpans, otlpSpan)
 	}
 
 	rawAttrs := map[string]any{
@@ -45,7 +44,7 @@ func traceToOTLP(t *Trace) (*otlp.ExportTraceServiceRequest, error) {
 
 	scopeSpan := &otlp.ScopeSpan{
 		Scope: scope,
-		Spans: spans,
+		Spans: otlpSpans,
 	}
 	scopeSpans := make([]*otlp.ScopeSpan, 0, 1)
 	scopeSpans = append(scopeSpans, scopeSpan)

@@ -72,6 +72,9 @@ func (attrKVListValue) isAttrValue() {}
 func (attrEmptyValue) isAttrValue()  {}
 
 func SerializeAttributes(attributes map[string]any) []*Attribute {
+	if len(attributes) == 0 {
+		return []*Attribute{}
+	}
 	result := make([]*Attribute, 0, len(attributes))
 	for key, value := range attributes {
 		if !isKeyValid(key) {

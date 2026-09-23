@@ -11,9 +11,7 @@ import (
 
 func main() {
 	client := http.DefaultClient
-	// https://otlp-gateway-prod-eu-west-2.grafana.net/otlp/v1/traces
 	url := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	// authorization header value
 	authorization := os.Getenv("OTEL_EXPORTER_OTLP_AUTHRIZATION_TOKEN")
 
 	gotrail.Init(

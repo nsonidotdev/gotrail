@@ -59,12 +59,12 @@ func main() {
 	time.Sleep(3 * time.Millisecond)
 	_, gateway := gotrail.Start(paymentCtx, "stripe.charge", map[string]any{"provider": "stripe"})
 	time.Sleep(20 * time.Millisecond)
-	gateway.Success()
-	payment.Success()
+	gateway.Fail("card_declined")
+	payment.Fail("payment gateway declined the charge")
 
 	_, notify := gotrail.Start(rootCtx, "send-confirmation-email", map[string]any{"template": "order_confirmed"})
 	time.Sleep(5 * time.Millisecond)
-	notify.Success()
+	notify.Skip("checkout failed, no confirmation to send")
 
-	root.Success()
+	root.Fail("checkout aborted: payment declined")
 }

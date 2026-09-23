@@ -35,11 +35,7 @@ func SpansToOTLPJSON(spans []*Span) (*otlp.ExportTraceServiceRequest, error) {
 		otlpSpans = append(otlpSpans, otlpSpan)
 	}
 
-	rawAttrs := map[string]any{
-		"repo":       "https://github.com/nsonidotdev/gotrail",
-		"suggestion": "star this repo please",
-	}
-	scopeAttrs := otlp.SerializeAttributes(rawAttrs)
+	scopeAttrs := []*otlp.Attribute{}
 
 	scope := &otlp.Scope{
 		Name:       "gotrail",

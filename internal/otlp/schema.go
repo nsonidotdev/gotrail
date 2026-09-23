@@ -29,6 +29,11 @@ type Scope struct {
 	Attributes []*Attribute `json:"attributes,omitempty"`
 }
 
+type SpanStatus struct {
+	Code    SpanStatusCode `json:"code,omitempty"`
+	Message string         `json:"message,omitempty"`
+}
+
 type Span struct {
 	TraceID           string       `json:"traceId"`                // id.TraceID
 	SpanID            string       `json:"spanId"`                 // id.SpanID
@@ -37,5 +42,6 @@ type Span struct {
 	StartTimeUnixNano string       `json:"startTimeUnixNano"`
 	EndTimeUnixNano   string       `json:"endTimeUnixNano"`
 	Kind              SpanKind     `json:"kind"`
+	Status            *SpanStatus  `json:"status,omitempty"`
 	Attributes        []*Attribute `json:"attributes,omitempty"`
 }

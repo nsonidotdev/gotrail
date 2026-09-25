@@ -12,27 +12,9 @@ func SpansToOTLPJSON(spans []*Span) (*otlp.ExportTraceServiceRequest, error) {
 	if len(spans) == 0 {
 		return nil, errNoSpans
 	}
-	otlpSpans := make([]*otlp.Span, 0, len(spans))
-	for _, span := range spans {
-		if _, ok := span.Attributes["gotrail.skipped"]; !ok && span.status == statusSkip {
-			span.Attributes["gotrail.skipped"] = true
-		}
-		attributes := otlp.SerializeAttributes(span.Attributes)
-		status := toOTLPSpanStatus(span)
-		otlpSpan := &otlp.Span{
-			TraceID:           hex.EncodeToString(span.Trace.ID[:]),
-			SpanID:            hex.EncodeToString(span.ID[:]),
-			Name:              span.Name,
-			StartTimeUnixNano: strconv.FormatInt(span.Start.UnixNano(), 10),
-			EndTimeUnixNano:   strconv.FormatInt(span.Start.UnixNano()+int64(span.Duration), 10),
-			Kind:              otlp.SpanKindServer,
-			Status:            status,
-			Attributes:        attributes,
-		}
-		if span.parent != nil {
-			otlpSpan.ParentSpanID = hex.EncodeToString(span.parent.ID[:])
-		}
-		otlpSpans = append(otlpSpans, otlpSpan)
+	otlpSpans := make([]*otlp.Span, len(spans))
+	for i, span := range spans {
+		otlpSpans[i] = toOTLPSpan(span)
 	}
 
 	scopeAttrs := []*otlp.Attribute{}
@@ -68,6 +50,38 @@ func SpansToOTLPJSON(spans []*Span) (*otlp.ExportTraceServiceRequest, error) {
 	}, nil
 }
 
+func toOTLPSpan(span *Span) *otlp.Span {
+	span.mu.Lock()
+	defer span.mu.Unlock()
+
+	if _, ok := span.Attributes["skipped"]; !ok && span.status == statusSkip {
+		span.Attributes["skipped"] = true
+	}
+	attributes := otlp.SerializeAttributes(span.Attributes)
+	status := toOTLPSpanStatus(span)
+
+	events := make([]*otlp.Event, len(span.Events))
+	for i, event := range span.Events {
+		events[i] = toOTLPEvent(event)
+	}
+
+	otlpSpan := &otlp.Span{
+		TraceID:           span.Trace.ID.String(),
+		SpanID:            span.ID.String(),
+		Name:              span.Name,
+		StartTimeUnixNano: strconv.FormatInt(span.Start.UnixNano(), 10),
+		EndTimeUnixNano:   strconv.FormatInt(span.Start.UnixNano()+int64(span.Duration), 10),
+		Kind:              otlp.SpanKindServer,
+		Status:            status,
+		Attributes:        attributes,
+	}
+	if span.parent != nil {
+		otlpSpan.ParentSpanID = hex.EncodeToString(span.parent.ID[:])
+	}
+
+	return otlpSpan
+}
+
 func toOTLPSpanStatus(s *Span) *otlp.SpanStatus {
 	switch s.status {
 	case statusFail:
@@ -89,5 +103,13 @@ func toOTLPSpanStatus(s *Span) *otlp.SpanStatus {
 
 	return &otlp.SpanStatus{
 		Code: otlp.StatusUnset,
+	}
+}
+
+func toOTLPEvent(e *Event) *otlp.Event {
+	return &otlp.Event{
+		Name:         e.Name,
+		TimeUnixNano: strconv.FormatInt(e.StartTime.UnixNano(), 10),
+		Attributes:   otlp.SerializeAttributes(e.Attributes),
 	}
 }

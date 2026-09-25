@@ -50,9 +50,6 @@ func SpansToOTLPJSON(spans []*Span) (*otlp.ExportTraceServiceRequest, error) {
 }
 
 func toOTLPSpan(span *Span) *otlp.Span {
-	span.mu.Lock()
-	defer span.mu.Unlock()
-
 	if _, ok := span.Attributes["skipped"]; !ok && span.status == statusSkip {
 		span.Attributes["skipped"] = true
 	}

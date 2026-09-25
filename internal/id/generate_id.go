@@ -2,7 +2,7 @@ package id
 
 import (
 	"crypto/rand"
-	"encoding/base64"
+	"encoding/hex"
 )
 
 // OTel requirements for ids
@@ -30,9 +30,9 @@ func GenerateSpanID() (SpanID, error) {
 }
 
 func (id TraceID) String() string {
-	return base64.StdEncoding.EncodeToString(id[:])
+	return hex.EncodeToString(id[:])
 }
 
 func (id SpanID) String() string {
-	return base64.StdEncoding.EncodeToString(id[:])
+	return hex.EncodeToString(id[:])
 }

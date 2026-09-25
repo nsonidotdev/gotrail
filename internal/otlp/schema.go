@@ -34,6 +34,12 @@ type SpanStatus struct {
 	Message string         `json:"message,omitempty"`
 }
 
+type Event struct {
+	Name         string       `json:"name"`
+	TimeUnixNano string       `json:"timeUnixNano"`
+	Attributes   []*Attribute `json:"attributes,omitempty"`
+}
+
 type Span struct {
 	TraceID           string       `json:"traceId"`                // id.TraceID
 	SpanID            string       `json:"spanId"`                 // id.SpanID

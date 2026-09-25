@@ -23,6 +23,7 @@ type Span struct {
 	Duration   time.Duration
 	Start      time.Time
 	Attributes map[string]any
+	Events     []*Event
 	status     status
 	reason     string
 	children   []*Span

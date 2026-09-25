@@ -38,11 +38,13 @@ func main() {
 	time.Sleep(4 * time.Millisecond)
 	_, verifyToken := gotrail.Start(authCtx, "verify-token", nil)
 	time.Sleep(2 * time.Millisecond)
+	verifyToken.AddEvent("token-verified", map[string]any{"exp_in_s": 3600})
 	verifyToken.Success()
 	auth.Success()
 
 	cartCtx, cart := gotrail.Start(rootCtx, "load-cart", map[string]any{"cart_id": "c_88f2"})
 	time.Sleep(6 * time.Millisecond)
+	cart.AddEvent("cache-miss", map[string]any{"cache": "redis"})
 	_, cartQuery := gotrail.Start(cartCtx, "db.query", map[string]any{
 		"db.statement": "SELECT * FROM cart_items WHERE cart_id = $1",
 	})
@@ -57,6 +59,7 @@ func main() {
 	time.Sleep(3 * time.Millisecond)
 	_, gateway := gotrail.Start(paymentCtx, "stripe.charge", map[string]any{"provider": "stripe"})
 	time.Sleep(20 * time.Millisecond)
+	gateway.AddEvent("card-declined", map[string]any{"decline_code": "insufficient_funds"})
 	gateway.Fail("card_declined")
 	payment.Fail("payment gateway declined the charge")
 

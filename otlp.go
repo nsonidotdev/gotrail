@@ -1,7 +1,6 @@
 package gotrail
 
 import (
-	"encoding/hex"
 	"strconv"
 
 	"github.com/nsonidotdev/gotrail/internal/otlp"
@@ -72,11 +71,12 @@ func toOTLPSpan(span *Span) *otlp.Span {
 		StartTimeUnixNano: strconv.FormatInt(span.Start.UnixNano(), 10),
 		EndTimeUnixNano:   strconv.FormatInt(span.Start.UnixNano()+int64(span.Duration), 10),
 		Kind:              otlp.SpanKindServer,
+		Events:            events,
 		Status:            status,
 		Attributes:        attributes,
 	}
 	if span.parent != nil {
-		otlpSpan.ParentSpanID = hex.EncodeToString(span.parent.ID[:])
+		otlpSpan.ParentSpanID = span.parent.ID.String()
 	}
 
 	return otlpSpan

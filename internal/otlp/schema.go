@@ -49,5 +49,6 @@ type Span struct {
 	EndTimeUnixNano   string       `json:"endTimeUnixNano"`
 	Kind              SpanKind     `json:"kind"`
 	Status            *SpanStatus  `json:"status,omitempty"`
+	Events            []*Event     `json:"events"`
 	Attributes        []*Attribute `json:"attributes,omitempty"`
 }
